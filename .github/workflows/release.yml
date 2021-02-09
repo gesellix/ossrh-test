@@ -19,7 +19,7 @@ jobs:
           java-version: 8
       - name: Set version
         run: |
-          echo "RELEASE_VERSION=$(${{ github.event.release.tag_name }} | sed -e s/^v//)" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
       - name: Print version
         run: |
           echo "going to release with version ${{ env.RELEASE_VERSION }}"
