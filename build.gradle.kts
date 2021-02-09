@@ -7,6 +7,7 @@ plugins {
   id("maven-publish")
   id("signing")
   id("io.freefair.maven-central.validate-poms") version "5.3.0"
+  id("io.codearte.nexus-staging") version "0.22.0"
 }
 
 repositories {
@@ -108,4 +109,9 @@ signing {
   val signingPassword: String? by project
   useInMemoryPgpKeys(signingKey, signingPassword)
   sign(publishing.publications[publicationName])
+}
+
+nexusStaging {
+  username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
+  password = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password")
 }
