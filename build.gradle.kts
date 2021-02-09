@@ -112,6 +112,8 @@ signing {
 }
 
 nexusStaging {
+  stagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: findProperty("sonatype.staging.profile.id")
   username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
   password = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password")
 }
+tasks.closeRepository.get().shouldRunAfter(tasks.publish)

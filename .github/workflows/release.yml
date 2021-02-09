@@ -21,12 +21,13 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(echo '${{ github.event.release.tag_name }}' | sed -e s/^v//)" >> $GITHUB_ENV
       - name: build publish
-        run: ./gradlew clean build publish --no-daemon --info --stacktrace -Pversion="${{ env.RELEASE_VERSION }}"
+        run: ./gradlew clean build publish closeAndReleaseRepository --no-daemon --info --stacktrace -Pversion="${{ env.RELEASE_VERSION }}"
         timeout-minutes: 10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_SIGNING_PASSWORD }}
+          SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
 ...
