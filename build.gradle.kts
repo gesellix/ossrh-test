@@ -1,8 +1,6 @@
 import java.text.SimpleDateFormat
 import java.util.*
 
-rootProject.extra.set("artifactVersion", SimpleDateFormat("yyyy-MM-dd\'T\'HH-mm-ss").format(Date()))
-
 plugins {
   id("java-library")
   id("groovy")
@@ -47,6 +45,8 @@ artifacts {
 
 fun findProperty(s: String) = project.findProperty(s) as String?
 
+val isSnapshot = project.version == "unspecified"
+val artifactVersion = if (!isSnapshot) project.version as String else SimpleDateFormat("yyyy-MM-dd\'T\'HH-mm-ss").format(Date())!!
 val publicationName = "ossrhTest"
 publishing {
   repositories {
@@ -58,12 +58,14 @@ publishing {
         password = System.getenv("GITHUB_TOKEN") ?: findProperty("github.package-registry.password")
       }
     }
-    maven {
-      name = "MavenCentral"
-      url = uri(property("sonatype.snapshot.url")!!)
-      credentials {
-        username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
-        password = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.password")
+    if (!isSnapshot) {
+      maven {
+        name = "MavenCentral"
+        url = uri(property("sonatype.staging.url")!!)
+        credentials {
+          username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
+          password = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.password")
+        }
       }
     }
   }
@@ -93,7 +95,7 @@ publishing {
         }
       }
       artifactId = "ossrh-test"
-      version = rootProject.extra["artifactVersion"] as String
+      version = artifactVersion
       from(components["java"])
       artifact(sourcesJar.get())
       artifact(javadocJar.get())
