@@ -64,7 +64,7 @@ publishing {
         url = uri(property("sonatype.staging.url")!!)
         credentials {
           username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
-          password = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.password")
+          password = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password")
         }
       }
     }
