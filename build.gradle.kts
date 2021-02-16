@@ -7,7 +7,7 @@ plugins {
   id("maven-publish")
   id("signing")
   id("io.freefair.maven-central.validate-poms") version "5.3.0"
-  id("io.codearte.nexus-staging") version "0.22.0"
+  id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 repositories {
@@ -111,9 +111,14 @@ signing {
   sign(publishing.publications[publicationName])
 }
 
-nexusStaging {
-  stagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: findProperty("sonatype.staging.profile.id")
-  username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
-  password = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password")
+nexusPublishing {
+  repositories {
+    sonatype {
+      // custom repository name - 'sonatype' is pre-configured
+      // for Sonatype Nexus (OSSRH) which is used for The Central Repository
+      stagingProfileId.set(System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: findProperty("sonatype.staging.profile.id")) //can reduce execution time by even 10 seconds
+      username.set(System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username"))
+      password.set(System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password"))
+    }
+  }
 }
-tasks.closeRepository.get().shouldRunAfter(tasks.publish)
