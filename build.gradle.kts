@@ -59,16 +59,6 @@ publishing {
         password = System.getenv("GITHUB_TOKEN") ?: findProperty("github.package-registry.password")
       }
     }
-    if (!isSnapshot) {
-      maven {
-        name = "MavenCentral"
-        url = uri(property("sonatype.staging.url")!!)
-        credentials {
-          username = System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username")
-          password = System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password")
-        }
-      }
-    }
   }
   publications {
     register(publicationName, MavenPublication::class) {
@@ -113,12 +103,14 @@ signing {
 
 nexusPublishing {
   repositories {
-    sonatype {
-      // custom repository name - 'sonatype' is pre-configured
-      // for Sonatype Nexus (OSSRH) which is used for The Central Repository
-      stagingProfileId.set(System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: findProperty("sonatype.staging.profile.id")) //can reduce execution time by even 10 seconds
-      username.set(System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username"))
-      password.set(System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password"))
+    if (!isSnapshot) {
+      sonatype {
+        // custom repository name - 'sonatype' is pre-configured
+        // for Sonatype Nexus (OSSRH) which is used for The Central Repository
+        stagingProfileId.set(System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: findProperty("sonatype.staging.profile.id")) //can reduce execution time by even 10 seconds
+        username.set(System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username"))
+        password.set(System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password"))
+      }
     }
   }
 }
